@@ -1,7 +1,7 @@
 # munchies
 
 ## Creating the tables
-
+```
 CREATE TABLE users (
   ID SERIAL PRIMARY KEY,
   name VARCHAR(30),
@@ -33,3 +33,4 @@ CREATE TABLE users_in_groups (
   user_id INTEGER REFERENCES users(ID),
   creator BOOLEAN
 );
+```
