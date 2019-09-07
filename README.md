@@ -1,3 +1,5 @@
+PennApps 2019
+
 # munchies
 
 ## Creating the tables
