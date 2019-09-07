@@ -24,7 +24,14 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
-    }
+      "supportsTablet": false,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses location to inform your city where to dispatch officials to.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "This app uses location to inform your city where to dispatch officials to.",
+        "NSLocationAlwaysUsageDescription": "This app uses location to inform your city where to dispatch officials to."
+      },
+      "bundleIdentifier": "com.litterhero"
+    },
+    "githubUrl": "https://github.com/helenamerk/munchies"
   }
 }
