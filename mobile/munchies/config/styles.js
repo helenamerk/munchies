@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginVertical: '10%',
+    marginHorizontal: '2%',
   },
   clickable: {
     width: '100%',

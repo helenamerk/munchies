@@ -2,7 +2,10 @@ import React from 'react';
 import styles from '../config/styles';
 import {View} from 'react-native';
 import {BlueButton, InverseButton} from '../components/Button';
-import Storage from '../lib/Storage'
+import Storage from '../lib/Storage';
+import {Notifications} from 'expo';
+import { registerForPushNotificationsAsync } from '../requests';
+
 // import {
 //   refreshAllData,
 //   logoutUser,
@@ -16,19 +19,22 @@ class HomeScreen extends React.Component {
     };
   };
 
-  // reroute to login if no account found
   componentDidMount() {
-    console.log('prerendering maybe')
-    // Storage.getItem('user_id').then((creds) => {
-    //     console.log(creds)
-    //   if (!creds) {
-    //     console.log('navigating!')
-    //     this.props.navigation.navigate('LoginScreen');
-    //   } else {
-    //     console.log('already logged in')
-    //   }
-    // });
+    registerForPushNotificationsAsync();
+
+    // Handle notifications that are received or selected while the app
+    // is open. If the app was closed and then opened by tapping the
+    // notification (rather than just tapping the app icon to open it),
+    // this function will fire on the next tick after the app starts
+    // with the notification data.
+    this._notificationSubscription = Notifications.addListener(this._handleNotification);
   }
+
+  _handleNotification = (notification) => {
+    console.log('HERE IT MIGHT NOT BE DEFINED')
+    console.log(notification.data)
+    this.props.navigation.navigate('MunchScreen', {notification: notification});
+  };
 
   handleStartPress = async () => {
     console.log('STARTED')
@@ -36,7 +42,7 @@ class HomeScreen extends React.Component {
     this.props.navigation.navigate('DoneScreen');
   };
 
-  handleRecentsPress = () => {
+  handleThemedPress = () => {
     console.log('STARTED')
 
     this.props.navigation.navigate('DoneScreen');
@@ -60,7 +66,7 @@ class HomeScreen extends React.Component {
             <BlueButton label='Start Munchgroup' onPress={this.handleStartPress} />
             <InverseButton
               label='Start Themed Munchgroup'
-              onPress={this.handleRecentsPress}
+              onPress={this.handleThemedPress}
             />
             <View style={{marginTop: 50}}>
               <InverseButton label='Logout' onPress={this.handleLogoutPress} />

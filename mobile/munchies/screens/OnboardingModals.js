@@ -19,10 +19,10 @@ class OnboardingModals extends React.Component {
     };
   };
 
-  state = {
-    location_permission: false,
-    notification_permission: false,
-  };
+    state = {
+        location_permission: false,
+        notification_permission: false,
+    };
 
     enableLocations = async () => {
         console.log('LOCATIONS HERE')

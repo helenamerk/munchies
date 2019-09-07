@@ -7,6 +7,10 @@ const CREATE_USER_ENDPOINT = exposed_url + '/users'
 const LOC_ENDPOINT = exposed_url + '/users/location'
 const PUSH_ENDPOINT = exposed_url + '/token'
 const MSG_ENDPOINT = exposed_url + '/message'
+const VENUE_ENDPOINT = exposed_url + '/venue'
+const MUNCH_ENDPOINT = exposed_url + '/munch'
+const JOIN_MUNCH_ENDPOINT = exposed_url + '/join_munch'
+const MUNCH_MEMBERS_ENDPOINT = exposed_url + '/munch_members'
 
 export const registerUser = async (name, email) => {
     return fetch(CREATE_USER_ENDPOINT, {
@@ -36,7 +40,6 @@ export const registerUser = async (name, email) => {
         console.error(err)
         return 'err'
       })
-    
 }
 
 export const storeUserLocation = async (location) => {
@@ -107,7 +110,66 @@ export const registerForPushNotificationsAsync = async () => {
   });
 }
 
-export const sendMessage = () => {
+export const getMunchMembers = async (munch_id) => {
+  const munch = await fetch(MUNCH_MEMBERS_ENDPOINT + '/' + munch_id)
+  const munch_data = await munch.json()
+  return munch_data.data;
+}
+
+
+export const getVenueDetails = async (munch_id) => {
+  const munch_details = await fetch(MUNCH_ENDPOINT + '/' + munch_id);
+  const munch_data = await munch_details.json();
+
+  console.log(munch_data)
+  const response = await fetch(VENUE_ENDPOINT + '/' + munch_data[0].id)
+  const data = await response.json()
+  
+  console.log('---------------------- here')
+  console.log(data[0].name)
+  return data[0].name;
+}
+
+export const joinMunch = async (munch_id) => {
+  let user_id = await Storage.getItem('user_id');
+
+  return fetch(JOIN_MUNCH_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_id: user_id,
+      munch_id: munch_id,
+    })
+  });
+}
+
+
+export const createMunch = async (time, venue_id) => {
+  let owner = await Storage.getItem('user_id');
+  console.log(owner)
+  let response = await fetch(MUNCH_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      owner: owner,
+      timestamp: time,
+      venue_id: venue_id,
+    })
+  });
+  console.log(response)
+  data = await response.json()
+  // do something with your data
+  console.log(data.munch_id)
+  return data.munch_id
+}
+
+export const sendMessage = (munch_id) => {
   return fetch(MSG_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -115,7 +177,9 @@ export const sendMessage = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        message: 'test message from sender'
+        title: 'Down to grab a meal?',
+        message: 'Open app to confirm.',
+        munch_id: munch_id, // replace with random value from db
       }),
     });
 

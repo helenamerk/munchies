@@ -32,6 +32,36 @@ const getUserById = (request, response) => {
   })
 }
 
+const getMunchById = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM munch_groups WHERE id = $1', [id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getMunchMembers = (request, response) => {
+  const id = parseInt(request.params.id)
+  console.log('HELP')
+  console.log(id)
+
+  pool.query('SELECT user_id FROM users_in_groups WHERE group_id = $1', [id], (error, results) => {
+    console.log(results.rows)
+    if (error) {
+      console.log(error)
+      throw error
+    }
+    let newres = []
+    for (let i in results.rows) {
+      newres[i] = Object.values(results.rows[i])[0]
+    }
+    response.status(200).json({data: newres})
+  })
+}
+
 const createUser = (request, response) => {
   const { user } = request.body
   console.log(user.name)
@@ -40,13 +70,8 @@ const createUser = (request, response) => {
   pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING ID', [user.name, user.email], (error, results) => {
     if (error) {
       console.log(error)
-      console.log('not allowed')
       throw error
     }
-    console.log('HERE')
-    console.log(results)
-    console.log(results.rows[0].id)
-    console.log('---------')
     response.status(201).json({ user_id: results.rows[0].id});
   })
 }
@@ -101,6 +126,42 @@ const getFriends = (request, response) => {
   })
 }
 
+const addToMunch = (group_id, user_id, creator) => {
+  console.log(group_id, user_id, creator)
+  return pool.query('INSERT INTO users_in_groups (group_id, user_id, creator) VALUES ($1, $2, $3) RETURNING user_id', [group_id, user_id, creator], (error, results) => {
+    console.log('HERE?')
+    console.log(results)
+    if (error) {
+      console.log(error)
+    }
+    return results
+  })
+}
+
+const joinMunch = (req, res) => {
+  const { munch_id, user_id } = req.body
+  addToMunch(munch_id, user_id, false)
+  res.status(201).send(`successfully joined group`);
+}
+
+const scheduleMunch = (req, res) => {
+  const { timestamp, venue_id, owner } = req.body
+
+  console.log(timestamp)
+  console.log(venue_id)
+  console.log(owner)
+
+  pool.query('INSERT INTO munch_groups (scheduled_time, venue_id) VALUES ($1, $2) RETURNING ID', [timestamp, venue_id], (error, results) => {
+    if (error) {
+      console.log(error)
+      throw error
+    }
+    console.log(results.rows[0].id)
+    addToMunch(results.rows[0].id, owner, true);
+    res.status(201).json({ munch_id: results.rows[0].id});
+  });
+}
+
 // Alert Handlings
 
 const registerDeviceToken = (req, res) => {
@@ -119,13 +180,33 @@ const registerDeviceToken = (req, res) => {
     })
 }
 
+
+
+// Venues
+
+const getVenueById = (request, response) => {
+  const id = parseInt(request.params.id)
+
+  pool.query('SELECT * FROM venues WHERE id = 1', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 module.exports = {
   getUsers,
   getUserById,
+  getMunchById,
   getFriends,
   getUserFriends,
   createUser,
   updateUser,
   deleteUser,
+  getVenueById,
+  joinMunch,
+  getMunchMembers,
+  scheduleMunch,
   registerDeviceToken,
 }

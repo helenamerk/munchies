@@ -18,6 +18,11 @@ app.get('/', (req, res) => {
 app.get('/users', db.getUsers)
 app.get('/users/:id', db.getUserById)
 
+app.get('/munch/:id', db.getMunchById)
+app.get('/munch_members/:id', db.getMunchMembers)
+
+app.get('/venue/:id', db.getVenueById)
+
 app.get('/friends/', db.getFriends)
 app.get('/friends/:id', db.getUserFriends)
 
@@ -26,8 +31,11 @@ app.put('/users/:id', db.updateUser)
 app.delete('/users/:id', db.deleteUser)
 
 app.post('/token', db.registerDeviceToken)
+app.post('/munch', db.scheduleMunch)
+app.post('/join_munch', db.joinMunch)
 
-const handlePushTokens = (message) => {
+
+const handlePushTokens = (message, venue_id) => {
     let notifications = [];
     pool.query('SELECT push_token FROM registered_devices', (error, results) => {
         if (error) {
@@ -49,7 +57,7 @@ const handlePushTokens = (message) => {
               sound: 'default',
               title: 'Message received!',
               body: message,
-              data: { message }
+              data: { venue_id }
             })
           }
 
@@ -69,7 +77,7 @@ const handlePushTokens = (message) => {
 }
 
 app.post('/message', (req, res) => {
-    handlePushTokens(req.body.message);
+    handlePushTokens(req.body.message, req.body.munch_id);
     console.log(`Received message, ${req.body.message}`);
     res.send(`Received message, ${req.body.message}`);
 });

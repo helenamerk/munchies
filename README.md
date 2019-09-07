@@ -20,8 +20,8 @@ CREATE TABLE registered_devices (
 CREATE TABLE venues (
   ID SERIAL PRIMARY KEY,
   name VARCHAR(30),
-  lat INT,
-  long INT
+  lat FLOAT,
+  long FLOAT
 );
 
 CREATE TABLE munch_groups (

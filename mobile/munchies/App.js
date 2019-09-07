@@ -7,6 +7,8 @@ import HomeScreen from './screens/HomeScreen';
 import DoneScreen from './screens/DoneScreen';
 import MyWebViewScreen from './screens/MyWebViewScreen';
 import OnboardingModals from './screens/OnboardingModals';
+import MunchScreen from './screens/MunchScreen';
+
 import colors from './config/colors';
 
 // TODO:
@@ -28,6 +30,9 @@ const MainStack = createStackNavigator(
     },
     DoneScreen: {
       screen: DoneScreen,
+    },
+    MunchScreen: {
+      screen: MunchScreen,
     },
   },
   {
